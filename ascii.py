@@ -2,35 +2,43 @@ import os
 import time
 import sys
 
-from pimoroni_i2c import PimoroniI2C
-from pimoroni import HEADER_I2C_PINS  # or PICO_EXPLORER_I2C_PINS or HEADER_I2C_PINS
-from breakout_encoder_wheel import BreakoutEncoderWheel, UP, DOWN, LEFT, RIGHT, CENTRE, NUM_LEDS
-from interstate75 import Interstate75, DISPLAY_INTERSTATE75_32X32
+if sys.implementation.name == 'micropython':
+    from pimoroni_i2c import PimoroniI2C
+    from pimoroni import HEADER_I2C_PINS  # or PICO_EXPLORER_I2C_PINS or HEADER_I2C_PINS
+    from breakout_encoder_wheel import BreakoutEncoderWheel, UP, DOWN, LEFT, RIGHT, CENTRE, NUM_LEDS
+    from interstate75 import Interstate75, DISPLAY_INTERSTATE75_32X32
 
-# Setup Interstate 75 Board
-# Setup graphics for i75 LED board
-i75 = Interstate75(display=DISPLAY_INTERSTATE75_32X32)
-graphics = i75.display
-width = i75.width
-height = i75.height
+    # Setup Interstate 75 Board
+    # Setup graphics for i75 LED board
+    i75 = Interstate75(display=DISPLAY_INTERSTATE75_32X32)
+    graphics = i75.display
+    width = i75.width
+    height = i75.height
 
+BLOCK_SIZE = 3
+BOARD_SIZE = 9
+LINE_SIZE = 1
+VALUE_SIZE_PIXELS = 3
+
+if sys.implementation.name == 'micropython':
 # Define Colors
-WHITE = graphics.create_pen(255, 255, 255)
-BLACK = graphics.create_pen(0,0,0)
+    WHITE = graphics.create_pen(255, 255, 255)
+    BLACK = graphics.create_pen(0,0,0)
 
-BLUE = graphics.create_pen(0, 0, 255)
-RED = graphics.create_pen(255, 0, 0)
-YELLOW = graphics.create_pen(255,255,0)
-GREEN = graphics.create_pen(0,255,0)
-PURPLE = graphics.create_pen(128,0,128)
-ORANGE = graphics.create_pen(255,165,0)
-CYAN = graphics.create_pen(40,255,255)
-PINK = graphics.create_pen(255,182,193)
-TEAL = graphics.create_pen(0,100,100)
-#GOLD = graphics.create_pen(255, 215, 0)
-SALMON = graphics.create_pen(255, 99, 71)
+    BLUE = graphics.create_pen(0, 0, 255)
+    RED = graphics.create_pen(255, 0, 0)
+    YELLOW = graphics.create_pen(255,255,0)
+    GREEN = graphics.create_pen(0,255,0)
+    PURPLE = graphics.create_pen(128,0,128)
+    ORANGE = graphics.create_pen(255,165,0)
+    CYAN = graphics.create_pen(40,255,255)
+    PINK = graphics.create_pen(255,182,193)
+    TEAL = graphics.create_pen(0,100,100)
+	#GOLD = graphics.create_pen(255, 215, 0)
+    SALMON = graphics.create_pen(255, 99, 71)
 
-led_mapping = {0: BLACK, 1: BLUE, 2: RED, 3: YELLOW, 4: GREEN, 5:PURPLE, 6:ORANGE, 7:CYAN, 8:PINK, 9:SALMON}
+    led_mapping = {0: BLACK, 1: RED, 2: BLUE, 3: GREEN, 4: YELLOW, 5:PINK, 6:ORANGE, 7:CYAN, 8:PURPLE, 9:SALMON}
+color_mapping = {0: " ", 1: "\033[91m█\033[0m", 2: "\033[94m█\033[0m", 3: "\033[92m█\033[0m", 4: "\033[93m█\033[0m", 5: "\033[95m█\033[0m", 6: "\033[33m█\033[0m", 7: "\033[96m█\033[0m", 8: "\033[35m█\033[0m", 9: "\033[37m█\033[0m"}
 
 
 # Draw a segment
@@ -78,6 +86,65 @@ def find_empty_location(board):
                 return i, j
     return None, None
 
+def solve_sudoku_no_recursion2(board):
+    stack = [(0, 0)]  # Stack to store (row, col) pairs
+    while stack:
+        row, col = stack[-1]
+        print("Starting Row " + str(row) + " col " + str(col))
+
+        # Find an empty location
+        while row < 9 and board[row][col] != 0:
+            row, col = (row + 1, col) if col < 8 else (row + 1, 0)
+        print("Row " + str(row) + " col " + str(col))
+
+        if row == 9:  # Solved if we reach the end
+            return True
+
+        # Try placing a number from 1 to 9
+        for num in range(board[row][col] + 1, 10):
+            if is_valid(board, row, col, num):
+                board[row][col] = num
+                stack.append((row, col))
+                display_sudoku(sudoku_board)
+                break
+        else:  # No valid number was found, backtrack
+            board[row][col] = 0
+            stack.pop()
+
+    return False
+
+
+def solve_sudoku_no_recursion(board):
+    stack = [(0, 0)]  # Stack to store (row, col) pairs
+    while stack:
+        row, col = stack.pop()
+
+        # Find an empty location
+        while row < 9 and board[row][col] != 0:
+            row, col = (row + 1, col) if col < 8 else (row + 1, 0)
+
+        print("Row " + str(row) + " col " + str(col))
+
+        if row == 9:  # Solved if we reach the end
+            return True
+
+        # Try placing a number from 1 to 9
+        for num in range(1, 10):
+            print(" num " + str(num))
+            if is_valid(board, row, col, num):
+                board[row][col] = num
+                stack.append((row, col))
+                display_sudoku(sudoku_board)
+                col = 0
+                break
+        else:  # No valid number was found, backtrack
+            board[row][col] = 0
+
+    return False
+
+# Rest of the code remains unchanged
+
+
 def solve_sudoku(board,attempt=0):
     for i in range(attempt):
         print(" ",end="")
@@ -95,10 +162,12 @@ def solve_sudoku(board,attempt=0):
             # Place the color if it's valid
             board[row][col] = color
                         
-            #print("\033[H", end="")
-            #print_sudoku(sudoku_board)
-            display_sudoku(sudoku_board)
-            #print("\nSudoku So Far")
+            if sys.implementation.name == 'micropython':
+                display_sudoku(sudoku_board)
+            else:
+                print("\033[H", end="")
+                print_sudoku(sudoku_board)
+
             time.sleep(0.2)
 
             # Recursively solve the rest of the puzzle
@@ -119,7 +188,7 @@ def display_color_chart():
             i75.update()
 
 def display_sudoku(board):
-    
+    print("Displaying")
     for i in range(9):
         for j in range(9):
             draw_value(0,0,j,i,led_mapping[board[i][j]],BLACK,3)
@@ -132,10 +201,8 @@ def display_sudoku(board):
 #     time.sleep(2)
 
 def print_sudoku(board):
-    color_mapping = {0: " ", 1: "\033[91m█\033[0m", 2: "\033[94m█\033[0m", 3: "\033[92m█\033[0m", 4: "\033[93m█\033[0m", 5: "\033[95m█\033[0m", 6: "\033[33m█\033[0m", 7: "\033[96m█\033[0m", 8: "\033[35m█\033[0m", 9: "\033[37m█\033[0m"}
-
-    for i in range(9):
-        for j in range(9):
+    for i in range(BOARD_SIZE):
+        for j in range(BOARD_SIZE):
             print(color_mapping[board[i][j]], end=" ")
         print()
 
@@ -159,10 +226,13 @@ if __name__ == "__main__":
 
 #     print("Original Sudoku:")
 #     print_sudoku(sudoku_board)
-
+#     if solve_sudoku_no_recursion2(sudoku_board):
     if solve_sudoku(sudoku_board):
+        if sys.implementation.name == 'micropython':
+            display_sudoku(sudoku_board)
+        
         print("\nSolved Sudoku:")
         print_sudoku(sudoku_board)
-        display_sudoku(sudoku_board)
+        
     else:
         print("\nNo solution exists.")
