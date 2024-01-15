@@ -143,21 +143,6 @@ def solve_sudoku_no_recursion(board):
 
     return False
 
-def extract_block(board,block_x,block_y):
-    print("Extracting block " + str(block_x) + ":" + str(block_y))
-    new_block = [[0,0,0],[0,0,0],[0,0,0]]
-    new_row = 0
-    new_col = 0
-    for row in range(block_x*3,(block_x*3)+BLOCK_SIZE):
-        new_col = 0
-        # print("Moving through columns to " + str((block_x*3)+BLOCK_SIZE))
-        for col in range(block_y*3,(block_y*3)+BLOCK_SIZE):
-            # print("Copying element from " + str(row) + ":" + str(col) + " to " + str(new_row) + ":" + str(new_col))
-            new_block[new_row][new_col] = board[row][col]
-            new_col += 1
-        new_row += 1
-    return new_block
-
 def solve_block(board):
     
     pass
