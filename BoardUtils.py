@@ -17,18 +17,22 @@ def create_block(starting_value,size):
     
     return new_block
 
-def find_empty_block(board,block_size=3):
+def find_empty_block(board,block_size=3, debug=False):
     for row in range(block_size):
         for col in range(block_size):
             this_block = extract_block(board,row,col,block_size)
             res1 = any(0 in sublist for sublist in this_block)
-            print("Is " + str(row) + ":" + str(col) + " empty? " + str(res1))
+            # print("Is " + str(row) + ":" + str(col) + " empty? " + str(res1))
             if res1:
+                if debug:
+                    print("Block at " + str(row) + ":" + str(col) + " has an empty square (" + str(res1) + ")")
                 return row,col
+    if debug:
+        print("No empty blocks found in board")
     return None, None
 
 def extract_block(board,block_x,block_y, block_size=3):
-    print("Extracting block " + str(block_x) + ":" + str(block_y))
+    # print("Extracting block " + str(block_x) + ":" + str(block_y))
     new_block = create_block(0,block_size)
     new_row = 0
     new_col = 0
@@ -86,8 +90,10 @@ def is_compatible_block(board,block,block_x,block_y, scale_size=3)->bool:
         board_x+=1
     return True
 
-def print_board(board):
+def print_board(board, spacing=0):
     for row in range(len(board)):
+        for i in range(spacing):
+            print(" ",end="")
         print(board[row])
 
 def return_test_board():
@@ -100,6 +106,19 @@ def return_test_board():
         [0, 6, 0, 0, 0, 0, 2, 8, 0],
         [0, 0, 0, 4, 1, 9, 0, 0, 5],
         [0, 0, 0, 0, 8, 0, 0, 7, 9]]
+
+def return_test_board_2():
+    return [
+        [0,0,0,0,2,7,0,5,6],
+        [0,0,0,8,3,0,2,0,4],
+        [0,0,0,4,6,0,0,1,0],
+        [0,0,1,0,0,0,5,0,2],
+        [0,3,0,2,4,6,0,9,0],
+        [7,0,9,0,0,0,4,0,0],
+        [0,4,0,0,5,2,0,0,0],
+        [9,0,2,0,8,1,0,0,0],
+        [8,1,0,9,7,0,0,0,0]]
+
 
 def reduce_board_permutations(board,block_size=3):
     import genperm

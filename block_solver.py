@@ -65,13 +65,29 @@ def clear_board():
     pass
 
 
-def is_valid(board, row, col, color,debug=True):
+def is_valid(board, row, col, color, debug=False):
     if debug:
-        print("Working row {:d} col {:d} of color {:d}".format(row,col,color))
+        print("  Working row {:d} col {:d} of color {:d}".format(row,col,color))
+    # display_board = [row[:] for row in board] 
+    # display_board[row][col] = color
+    # print("\033[H", end="")
+    # print_sudoku(display_board)
+    print("\033[" + str(row) + ";" + str(col*2) + "H", end="")
+    print(color_mapping[color], end=" ")
+    print("\033[16;1H", end="")
+    print("  Working row {:d} col {:d} of color {:d}".format(row,col,color))
+
     # Check if the color is already present in the row or column
     for i in range(9):
-        if board[row][i] == color or board[i][col] == color:
-            print("Row or Col" + str(i))
+        if board[row][i] == color:
+            if debug:
+                print("   Found " + str(color) + " in col " + str(i))
+                BoardUtils.print_board(board)
+            return False
+        if board[i][col] == color:
+            if debug:
+                print("   Found " + str(color) + " in row " + str(i))
+                BoardUtils.print_board(board)
             return False
 
     # Check if the color is present in the 3x3 grid
@@ -80,22 +96,33 @@ def is_valid(board, row, col, color,debug=True):
         for j in range(3):
             if board[start_row + i][start_col + j] == color:
                 return False
-
+        
+    if debug:
+        print("  Valid at row {:d} col {:d} of color {:d}".format(row,col,color))
     return True
 
-def is_block_valid(board,this_block,row,col,block_size=3,debug=False):
-    if debug:
-        print("Working on this block from " + str(row) + ":" + str(col) + "->")
-        BoardUtils.print_board(this_block)
+# Review each cell of block, add it to board and see if it would be a valid play
+def is_block_valid(board,this_block,row,col,block_size=3,debug=True):
+    # if debug:
+    #     print(" Working on this block from " + str(row) + ":" + str(col) + "->")
+    #     BoardUtils.print_board(this_block)
     orig_block = BoardUtils.extract_block(board,row,col)
     for attempt in range(block_size*block_size):
         b_row,b_col = find_empty_location(orig_block)
         if not b_row == None and not b_col == None:
-            print(" Working on space at " + str(b_row) + ":" + str(b_col) + "->" + str(this_block[b_row][b_col]))
-            if not is_valid(board,b_row,b_col,this_block[b_row][b_col]):    # This won't work past square 1. b_row and b_col need to translate
-                print("Block at " + str(row) + ":" + str(col) + " Was not valid")
+            if debug:
+                print(" Working on space at " + str(b_row) + ":" + str(b_col) + "->" + str(this_block[b_row][b_col]))
+            if not is_valid(board,b_row+(row*block_size),b_col+(col*block_size),this_block[b_row][b_col],debug):
+                if debug:
+                    print(" Block at " + str(row) + ":" + str(col) + " Was not valid")
                 return False
-    print("Block at " + str(row) + ":" + str(col) + " Was valid")
+            else:
+                if debug:
+                    print("  Temp Filled in cell at " + str(b_row+(row*block_size)) + ":" + str(b_col+(col*block_size)) + " with color " + str(this_block[b_row][b_col]))
+                orig_block[b_row][b_col] = this_block[b_row][b_col]
+
+    if debug:
+        print("Block at " + str(row) + ":" + str(col) + " Was valid")
     return True
 
 def find_empty_location(board):
@@ -106,51 +133,84 @@ def find_empty_location(board):
                 return i, j
     return None, None
 
-def solve_sudoku(board,attempt=0):
-    for i in range(attempt):
-        print(" ",end="")
-    print("Starting depth " + str(attempt))
+def solve_sudoku(board,attempt=0,debug=True):
+    if debug:
+        for i in range(attempt):
+            print(" ",end="")
+        print("Starting depth " + str(attempt))
 
-    # Find an empty location
-    row, col = BoardUtils.find_empty_block(board)
+    # Find a block with an empty location to start with
+    row, col = BoardUtils.find_empty_block(board,3,debug)
 
     # If there are no empty locations, the puzzle is solved
     if row is None:
+        print("No empty blocks found. I think we're done!!")
+        if debug:
+            BoardUtils.print_board(board, 2)
         return True
     
-    #the_good_perms
     index = BoardUtils.x_y_to_int(row,col,3)
-    orig_board = [row[:] for row in board]
-    print("For " + str(row) + ":" + str(col) + "-> " + str(len(the_good_perms[index])) + " possibilities")
-    for perm in the_good_perms[index]:
-        print("Trying block")
-        BoardUtils.print_board(perm)
+    orig_board = [row[:] for row in board]  # Copy passed in board
+    if debug:
+        print("For " + str(row) + ":" + str(col) + "-> " + str(len(the_good_perms[index])) + " possibilities")
+    for perm_number,perm in enumerate(the_good_perms[index]):
+        print("\033[15;0H", end="")
+        print("Perm " + str(perm_number) + " of " + str(len(the_good_perms[index])))
+
+        if debug:
+            print("\033c", end="\033[A")
+            print("\033[H", end="")
+            print("For " + str(row) + ":" + str(col) + "-> Trying block " + str(perm_number) + " of " + str(len(the_good_perms[index])))
+            BoardUtils.print_board(perm, 1)
         
-        # board = BoardUtils.merge_block_if_compatible(orig_board,perm,row,col)
         if not BoardUtils.is_compatible_block(board,perm,row,col):
-            print("perm wasn't compatible")
+            print("   Permutation " + str(perm_number) + "For " + str(row) + ":" + str(col) + " wasn't compatible...this shouldn't happen with reduced permutation lists. Perm:")
+            BoardUtils.print_board(perm, 3)
+            print("   Failed while board was ")
+            BoardUtils.print_board(board, 5)
+            print("   Original board was " )
+            BoardUtils.print_board(orig_board, 5)
+            time.sleep(60)
             continue
 
-        print("Potential Board")
-        BoardUtils.print_board(board)
-        if is_block_valid(orig_board,perm,row,col):
+        # print(" Potential Board")
+        # BoardUtils.print_board(board)
+        if is_block_valid(orig_board,perm,row,col,3,debug):
             board = BoardUtils.merge_block_if_compatible(board,perm,row,col)
             if sys.implementation.name == 'micropython':
-                display_sudoku(sudoku_board)
+                display_sudoku(board)
+                if debug:
+                    print("Merged. Board is now:")
+                    print_sudoku(board)
             else:
+                print("\033c", end="\033[A")
                 print("\033[H", end="")
-                print_sudoku(sudoku_board)
+                print_sudoku(board)
+                print()
+                print()
+                print()
+                print()
+                print("For " + str(row) + ":" + str(col) + "-> Used block " + str(perm_number) + " of " + str(len(the_good_perms[index])))
 
-            time.sleep(0.2)
+            # time.sleep(0.1)
 
             # Recursively solve the rest of the puzzle
-            if solve_sudoku(board,attempt+1):
+            if solve_sudoku(board,attempt+1, debug):
+                global sudoku_board
+                sudoku_board = board    # Copy this version back to the global board (ugh)
                 return True
+            else:
+                # Recursion was unsuccessful, restore board
+                if debug:
+                    print("Restoring board after " + str(row) + ":" + str(col) + " attempt " + str(perm_number))
+                board = [row[:] for row in orig_board]
 
             # If placing the current color doesn't lead to a solution, backtrack
             # board[row][col] = 0   # Might not need to revert with only good permutations
 
     # No valid color was found, backtrack to the previous empty location
+    print("Backtracking after " + str(row) + ":" + str(col))
+    # time.sleep(5)
     return False
 
 def display_color_chart():
@@ -179,19 +239,23 @@ def print_sudoku(board):
             print(color_mapping[board[i][j]], end=" ")
         print()
 
+
+sudoku_board = BoardUtils.return_test_board_2()
+
 if __name__ == "__main__":
     # Example Sudoku board (0 represents empty cells)
-    sudoku_board = [
-        [5, 3, 0, 0, 7, 0, 0, 0, 0],
-        [6, 0, 0, 1, 9, 5, 0, 0, 0],
-        [0, 9, 8, 0, 0, 0, 0, 6, 0],
-        [8, 0, 0, 0, 6, 0, 0, 0, 3],
-        [4, 0, 0, 8, 0, 3, 0, 0, 1],
-        [7, 0, 0, 0, 2, 0, 0, 0, 6],
-        [0, 6, 0, 0, 0, 0, 2, 8, 0],
-        [0, 0, 0, 4, 1, 9, 0, 0, 5],
-        [0, 0, 0, 0, 8, 0, 0, 7, 9]
-    ]
+    # sudoku_board = [
+    #     [5, 3, 0, 0, 7, 0, 0, 0, 0],
+    #     [6, 0, 0, 1, 9, 5, 0, 0, 0],
+    #     [0, 9, 8, 0, 0, 0, 0, 6, 0],
+    #     [8, 0, 0, 0, 6, 0, 0, 0, 3],
+    #     [4, 0, 0, 8, 0, 3, 0, 0, 1],
+    #     [7, 0, 0, 0, 2, 0, 0, 0, 6],
+    #     [0, 6, 0, 0, 0, 0, 2, 8, 0],
+    #     [0, 0, 0, 4, 1, 9, 0, 0, 5],
+    #     [0, 0, 0, 0, 8, 0, 0, 7, 9]
+    # ]
+    
     
     #display_color_chart()
     #sys.exit(1)
@@ -201,14 +265,23 @@ if __name__ == "__main__":
 #     print_sudoku(sudoku_board)
 #     if solve_sudoku_no_recursion2(sudoku_board):
     
+    start_time = time.time()
+    print('\033[?25l', end="")
+    print(u'\u250F\u2501\u2501\u2501\u2501\u2513')
+    print(u'\u25031234\u2503')
+    print(u'\u2517\u2501\u2501\u2501\u2501\u251B')
     the_good_perms = BoardUtils.reduce_board_permutations(sudoku_board)
 
-    if solve_sudoku(sudoku_board):
+    if solve_sudoku(sudoku_board, 0, False):
         if sys.implementation.name == 'micropython':
             display_sudoku(sudoku_board)
         
         print("\nSolved Sudoku:")
         print_sudoku(sudoku_board)
+        BoardUtils.print_board(sudoku_board)
         
     else:
         print("\nNo solution exists.")
+
+    print("--- %s seconds ---" % (time.time() - start_time))
+    print('\033[?25h', end="")

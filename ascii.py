@@ -1,6 +1,7 @@
 import os
 import time
 import sys
+import BoardUtils
 
 if sys.implementation.name == 'micropython':
     from pimoroni_i2c import PimoroniI2C
@@ -206,19 +207,26 @@ def print_sudoku(board):
             print(color_mapping[board[i][j]], end=" ")
         print()
 
+def print_sudoku_numbers(board):
+    for i in range(BOARD_SIZE):
+        for j in range(BOARD_SIZE):
+            print(board[i][j], end=" ")
+        print()
+
 if __name__ == "__main__":
     # Example Sudoku board (0 represents empty cells)
-    sudoku_board = [
-        [5, 3, 0, 0, 7, 0, 0, 0, 0],
-        [6, 0, 0, 1, 9, 5, 0, 0, 0],
-        [0, 9, 8, 0, 0, 0, 0, 6, 0],
-        [8, 0, 0, 0, 6, 0, 0, 0, 3],
-        [4, 0, 0, 8, 0, 3, 0, 0, 1],
-        [7, 0, 0, 0, 2, 0, 0, 0, 6],
-        [0, 6, 0, 0, 0, 0, 2, 8, 0],
-        [0, 0, 0, 4, 1, 9, 0, 0, 5],
-        [0, 0, 0, 0, 8, 0, 0, 7, 9]
-    ]
+    # sudoku_board = [
+    #     [5, 3, 0, 0, 7, 0, 0, 0, 0],
+    #     [6, 0, 0, 1, 9, 5, 0, 0, 0],
+    #     [0, 9, 8, 0, 0, 0, 0, 6, 0],
+    #     [8, 0, 0, 0, 6, 0, 0, 0, 3],
+    #     [4, 0, 0, 8, 0, 3, 0, 0, 1],
+    #     [7, 0, 0, 0, 2, 0, 0, 0, 6],
+    #     [0, 6, 0, 0, 0, 0, 2, 8, 0],
+    #     [0, 0, 0, 4, 1, 9, 0, 0, 5],
+    #     [0, 0, 0, 0, 8, 0, 0, 7, 9]
+    # ]
+    sudoku_board = BoardUtils.return_test_board_2()
     
     #display_color_chart()
     #sys.exit(1)
@@ -227,12 +235,17 @@ if __name__ == "__main__":
 #     print("Original Sudoku:")
 #     print_sudoku(sudoku_board)
 #     if solve_sudoku_no_recursion2(sudoku_board):
+    start_time = time.time()
+
     if solve_sudoku(sudoku_board):
         if sys.implementation.name == 'micropython':
             display_sudoku(sudoku_board)
         
         print("\nSolved Sudoku:")
         print_sudoku(sudoku_board)
+        print_sudoku_numbers(sudoku_board)
         
     else:
         print("\nNo solution exists.")
+
+    print("--- %s seconds ---" % (time.time() - start_time))
