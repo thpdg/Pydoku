@@ -1,3 +1,4 @@
+import os
 from sprite import Sprite
 import random
 
@@ -27,10 +28,10 @@ J = [[0,1],
      [0,1],
      [1,1]]
 
-I = [[0,1],
-     [0,1],
-     [0,1],
-     [0,1]]
+I = [[1],
+     [1],
+     [1],
+     [1]]
 
 SpriteShapes = [S,Sq,Z,T,L,J,I]
 Colors = ["R","Y","G","B","V"]
@@ -58,11 +59,30 @@ canvas = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
           [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
           [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
 
+def clear_board():
+#     if sys.implementation.name == 'micropython':
+#         graphics.remove_clip()
+#         graphics.set_pen(BLACK)
+#         graphics.clear()
+#     else:
+     os.system('cls' if os.name == 'nt' else 'clear')
+
+def board_full(context):
+    for pixel in context[0]:
+        if pixel != 0:
+            return True
+    return False
+
+clear_board()
+
+def newSprite() -> Sprite:
+    sprite = Sprite("Test" + str(m),Colors[random.randrange(len(Colors))],0,random.randrange(9),SpriteShapes[random.randrange(len(SpriteShapes))])
+    sprite.setSpeed(1,0)
+    print(sprite)
+    return sprite
+
 for m in range(2):
-    sprite1 = Sprite("Test" + str(m),Colors[random.randrange(len(Colors))],0,2+m+m+m,SpriteShapes[random.randrange(len(SpriteShapes))])
-    sprite1.setSpeed(1,0)
-    print(sprite1)
-    Sprites.append(sprite1)
+    Sprites.append(newSprite())
 
 # sprite1 = Sprite("Test1","R",1,1,S)
 # # sprite1.rotate90()
@@ -73,12 +93,32 @@ for m in range(2):
 # sprite2.setSpeed(0,1)
 # Sprites.append(sprite2)
 
-Sprite.printData("Blank:",canvas)
+# Sprite.printData("Blank:",canvas)
 
-for z in range(8):
+
+for z in range(2000):
+    if board_full(canvas):
+        print("Board Full at " + str(z))
+        break
+    moved = False
+    aSprite: Sprite
     for aSprite in Sprites:
-        aSprite.eraseUpdateRedraw(canvas)
+    #    print("Checking potential collision")
+        if not aSprite.updateWouldCollide(canvas, True):
+            aSprite.eraseUpdateRedraw(canvas)
+            moved = True
+        else:
+            aSprite.setSpeed(0,0)
+            
     Sprite.printData("Step " + str(z) + ":", canvas)
+    if not moved:
+        print("All stop after " + str(z))
+        new_sprite = newSprite()
+        overlaps = new_sprite.checkOverlap(canvas)
+        if overlaps:
+            print(" Would overlap; Ending")
+            break
+        Sprites.append(newSprite())
 
 
 
