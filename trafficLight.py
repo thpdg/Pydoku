@@ -51,7 +51,9 @@ def displaySignal(signalState=None, debug=False):
         print("Next...")
     sleep_time=signalState[3]
     print(u'\033[H', end="")
-    print(u'\033[40m\u250F\u2501\u2513\033[m')
+    #print(u'\033[40m\u250F\u2501\u2513\033[m')
+    print(u'\033]8;;http://www.yahoo.com\033\\This is a link\033]8;;\033\\\n')
+    print(u'\033[40m\033[38;2;180;0;158m\u250F\u2501\u2513\033[m')
     print(u'\033[40m\u2503\033[91m' + ('\u25CF' if signalState[0] == RED else '\u25CB') + '\033[0;40m\u2503\033[m')
     print(u'\033[40m\u2503\033[93m' + ('\u25CF' if signalState[1] == YELLOW else '\u25CB') + '\033[0;40m\u2503\033[m')
     print(u'\033[40m\u2503\033[92m' + ('\u25CF' if signalState[2] == GREEN else '\u25CB') + '\033[0;40m\u2503\033[m')
