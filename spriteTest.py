@@ -1,6 +1,8 @@
+import time
 import os
 from sprite import Sprite
 import random
+import TetrisBoardUtils
 
 BOARD_SIZE = 10
 
@@ -75,10 +77,11 @@ def board_full(context):
 
 clear_board()
 
-def newSprite() -> Sprite:
+def newSprite(debug = False) -> Sprite:
     sprite = Sprite("Test" + str(m),Colors[random.randrange(len(Colors))],0,random.randrange(9),SpriteShapes[random.randrange(len(SpriteShapes))])
     sprite.setSpeed(1,0)
-    print(sprite)
+    if debug:
+        print(sprite)
     return sprite
 
 for m in range(2):
@@ -104,13 +107,15 @@ for z in range(2000):
     aSprite: Sprite
     for aSprite in Sprites:
     #    print("Checking potential collision")
-        if not aSprite.updateWouldCollide(canvas, True):
+        if not aSprite.updateWouldCollide(canvas, False):
             aSprite.eraseUpdateRedraw(canvas)
             moved = True
         else:
             aSprite.setSpeed(0,0)
             
-    Sprite.printData("Step " + str(z) + ":", canvas)
+    # Sprite.printData("Step " + str(z) + ":", canvas)
+    TetrisBoardUtils.TetrisBoardUtils.drawBoardToScreen(canvas)
+    time.sleep(0.25)
     if not moved:
         print("All stop after " + str(z))
         new_sprite = newSprite()
@@ -119,6 +124,8 @@ for z in range(2000):
             print(" Would overlap; Ending")
             break
         Sprites.append(newSprite())
+
+TetrisBoardUtils.TetrisBoardUtils.drawBoardToScreen(canvas)
 
 
 

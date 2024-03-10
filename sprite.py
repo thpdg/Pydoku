@@ -112,7 +112,8 @@ class Sprite:
         newX = aClone.x
         for row in aClone.shapeData:
             if newX < len(context):
-                print("X is now " + str(newX) + " and length is " + str(len(context)))
+                if debug:
+                    print("X is now " + str(newX) + " and length is " + str(len(context)))
                 newY = aClone.y
                 for pixel in row:
                     if debug:
