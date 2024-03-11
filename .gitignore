@@ -1,3 +1,5 @@
 /.DS_Store
 __pycache__/BoardUtils.cpython-310.pyc
 __pycache__/genperm.cpython-310.pyc
+__pycache__/sprite.cpython-310.pyc
+__pycache__/TetrisBoardUtils.cpython-310.pyc

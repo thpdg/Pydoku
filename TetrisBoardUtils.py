@@ -31,3 +31,29 @@ class TetrisBoardUtils:
         # print(u'\033[40m\u2503\033[91m' + ('\u25CF' if pixel == "R" else '\u25AE\u2588\u2593\u2588\u2593') + '\033[0;40m\u2503\033[m')
         # print(u'\033[40m\u2517\u2501\u251B\033[m')
         pass
+
+    def bottomLineFilled(boardData, debug = False):
+        bottomLine = boardData[-1]
+        count = bottomLine.count(0)
+        print("Free squares: " + str(count))
+        if count == 0:
+            return True
+        return False
+
+    def firstOpenInBottomLine(boardData, debug = False):
+        bottomLine = boardData[-1]
+        count = 0
+        for pixel in bottomLine:
+            if pixel == 0:
+                return count
+            count+=1
+        return 99
+
+    def highestBlock(boardData, debug=False):
+        rowNumber = 0
+        for row in boardData:
+            for pixel in row:
+                if pixel != 0:
+                    return len(boardData)-rowNumber
+            rowNumber+=1
+        return len(boardData)

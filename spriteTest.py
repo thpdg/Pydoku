@@ -98,7 +98,8 @@ for m in range(2):
 
 # Sprite.printData("Blank:",canvas)
 
-
+targetGap = 0
+highestBlock = 0
 for z in range(2000):
     if board_full(canvas):
         print("Board Full at " + str(z))
@@ -112,9 +113,19 @@ for z in range(2000):
             moved = True
         else:
             aSprite.setSpeed(0,0)
+
+        print("Comparingg " +str(aSprite.x) + ":" + str(targetGap))
+        if aSprite.x > targetGap:
+            aSprite.moveBy(-1,0)
             
     # Sprite.printData("Step " + str(z) + ":", canvas)
     TetrisBoardUtils.TetrisBoardUtils.drawBoardToScreen(canvas)
+    print("Bottom line full? " + str(TetrisBoardUtils.TetrisBoardUtils.bottomLineFilled(canvas)))
+    print("First open space " + str(TetrisBoardUtils.TetrisBoardUtils.firstOpenInBottomLine(canvas)))
+    print("Target Gap is " + str(targetGap))
+    print("Highest block is " + str(highestBlock))
+
+    
     time.sleep(0.25)
     if not moved:
         print("All stop after " + str(z))
@@ -123,6 +134,8 @@ for z in range(2000):
         if overlaps:
             print(" Would overlap; Ending")
             break
+        targetGap = TetrisBoardUtils.TetrisBoardUtils.firstOpenInBottomLine(canvas)    
+        highestBlock = TetrisBoardUtils.TetrisBoardUtils.highestBlock(canvas)
         Sprites.append(newSprite())
 
 TetrisBoardUtils.TetrisBoardUtils.drawBoardToScreen(canvas)
