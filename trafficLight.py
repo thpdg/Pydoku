@@ -31,6 +31,7 @@ if sys.implementation.name == 'micropython':
     OFF_BLUE = graphics.create_pen(0, 0, 64)
 else:
     RED = (255, 0, 0)
+    BLUE = (0, 0, 255)
     OFF_RED = (64, 0, 0)
     YELLOW = (255,255,0)
     GREEN = (0,255,0)
@@ -38,6 +39,7 @@ else:
     BORDER_RED = (128, 0, 0)
     OFF_YELLOW = (64,64,0)
     OFF_GREEN = (0,64,0)
+    OFF_BLUE = (0,0,64)
 
 def clear_board():
     if sys.implementation.name == 'micropython':
@@ -48,6 +50,7 @@ def clear_board():
         os.system('cls' if os.name == 'nt' else 'clear')
 
 def displaySignal(signalState=None, debug=False):
+    BLUE_MODE = True
     if debug:
         print("Next...")
     sleep_time=signalState[3]
@@ -57,7 +60,10 @@ def displaySignal(signalState=None, debug=False):
     print(u'\033[40m\033[38;2;180;0;158m\u250F\u2501\u2513\033[m')
     print(u'\033[40m\u2503\033[91m' + ('\u25CF' if signalState[0] == RED else '\u25CB') + '\033[0;40m\u2503\033[m')
     print(u'\033[40m\u2503\033[93m' + ('\u25CF' if signalState[1] == YELLOW else '\u25CB') + '\033[0;40m\u2503\033[m')
-    print(u'\033[40m\u2503\033[92m' + ('\u25CF' if signalState[2] == GREEN else '\u25CB') + '\033[0;40m\u2503\033[m')
+    if BLUE_MODE:
+        print(u'\033[40m\u2503\033[94m' + ('\u25CF' if signalState[2] == BLUE else '\u25CB') + '\033[0;40m\u2503\033[m')
+    else:    
+        print(u'\033[40m\u2503\033[92m' + ('\u25CF' if signalState[2] == GREEN else '\u25CB') + '\033[0;40m\u2503\033[m')
     print(u'\033[40m\u2517\u2501\u251B\033[m')
     if sys.implementation.name == 'micropython':
         graphics.set_pen(signalState[0])
