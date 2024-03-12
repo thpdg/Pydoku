@@ -19,8 +19,8 @@ class TetrisBoardUtils:
         else:
             os.system('cls' if os.name == 'nt' else 'clear')
 
-    def drawBoardToScreen(boardData):
-        TetrisBoardUtils.clear_board()
+    def drawBoardToScreen(boardData,clear_board = False):
+        TetrisBoardUtils.clear_board() if clear_board else None
         for row in boardData:
             for pixel in row:
                 print(TetrisBoardUtils.colorTable[pixel] + TetrisBoardUtils.colorTable[pixel],end="")

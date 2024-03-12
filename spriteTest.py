@@ -77,15 +77,17 @@ def board_full(context):
 
 clear_board()
 
-def newSprite(debug = False) -> Sprite:
-    sprite = Sprite("Test" + str(m),Colors[random.randrange(len(Colors))],0,random.randrange(9),SpriteShapes[random.randrange(len(SpriteShapes))])
+def newSprite(index = 0, debug = False) -> Sprite:
+    sprite = Sprite("Test" + str(index),Colors[random.randrange(len(Colors))],0,random.randrange(9),SpriteShapes[random.randrange(len(SpriteShapes))])
     sprite.setSpeed(1,0)
     if debug:
         print(sprite)
     return sprite
 
-for m in range(2):
-    Sprites.append(newSprite())
+
+# Starting piece
+# for m in range(2):
+Sprites.append(newSprite(1))
 
 # sprite1 = Sprite("Test1","R",1,1,S)
 # # sprite1.rotate90()
@@ -114,9 +116,13 @@ for z in range(2000):
         else:
             aSprite.setSpeed(0,0)
 
-        print("Comparingg " +str(aSprite.x) + ":" + str(targetGap))
-        if aSprite.x > targetGap:
-            aSprite.moveBy(-1,0)
+        print("Comparing " + str(aSprite.y) + ":" + str(targetGap))
+        if aSprite.y > targetGap:
+            # print("Go left")
+            aSprite.moveBy(0,-1)
+        else:
+            if aSprite.y < targetGap:
+                aSprite.moveBy(0,1)
             
     # Sprite.printData("Step " + str(z) + ":", canvas)
     TetrisBoardUtils.TetrisBoardUtils.drawBoardToScreen(canvas)
@@ -129,7 +135,7 @@ for z in range(2000):
     time.sleep(0.25)
     if not moved:
         print("All stop after " + str(z))
-        new_sprite = newSprite()
+        new_sprite = newSprite(z)
         overlaps = new_sprite.checkOverlap(canvas)
         if overlaps:
             print(" Would overlap; Ending")

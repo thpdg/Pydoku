@@ -40,10 +40,10 @@ class Sprite:
         self.x = new_x
         self.y = new_y
 
-    def moveBy(self,new_x,new_y):
-        return self.moveTo(self.x+new_x,self.y+new_y)
+    def moveBy(self,delta_x,delta_y):
+        return self.moveTo(self.x+delta_x,self.y+delta_y)
 
-    def displayTo(self,context,x,y,erase_mode,debug=False):
+    def displayTo(self,context,x,y,erase_mode=True,debug=False):
         myx = x
         myy = y
         if debug:
