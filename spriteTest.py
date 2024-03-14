@@ -90,7 +90,7 @@ for z in range(2000):
                     print(" Steering right") if _mainDebug else None
                     aSprite.moveBy(0,1)
             
-    TetrisBoardUtils.drawBoardToScreen(canvas)
+    TetrisBoardUtils.drawBoardToScreen(canvas, True)
     print("Bottom line full? " + str(TetrisBoardUtils.bottomLineFilled(canvas)))
     print("First open space " + str(TetrisBoardUtils.firstOpenInBottomLine(canvas)))
     print("Target Gap is " + str(targetGap))
