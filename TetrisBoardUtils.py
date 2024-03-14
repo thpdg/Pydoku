@@ -57,3 +57,12 @@ class TetrisBoardUtils:
                     return len(boardData)-rowNumber
             rowNumber+=1
         return len(boardData)
+    
+    # Determines if board is full by examining top row for any present block
+    def IsBoardFull(boardData, debug=False):
+        print(boardData[0]) if debug else None
+        for pixel in boardData[0]:
+            print(pixel) if debug else None
+            if pixel != 0:
+                return True
+        return False
