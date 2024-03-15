@@ -19,8 +19,8 @@ class TetrisBoardUtils:
         else:
             os.system('cls' if os.name == 'nt' else 'clear')
 
-    def drawBoardToScreen(boardData):
-        TetrisBoardUtils.clear_board()
+    def drawBoardToScreen(boardData,clear_board = False):
+        TetrisBoardUtils.clear_board() if clear_board else None
         for row in boardData:
             for pixel in row:
                 print(TetrisBoardUtils.colorTable[pixel] + TetrisBoardUtils.colorTable[pixel],end="")
@@ -57,3 +57,12 @@ class TetrisBoardUtils:
                     return len(boardData)-rowNumber
             rowNumber+=1
         return len(boardData)
+    
+    # Determines if board is full by examining top row for any present block
+    def IsBoardFull(boardData, debug=False):
+        print(boardData[0]) if debug else None
+        for pixel in boardData[0]:
+            print(pixel) if debug else None
+            if pixel != 0:
+                return True
+        return False

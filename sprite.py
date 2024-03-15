@@ -40,10 +40,10 @@ class Sprite:
         self.x = new_x
         self.y = new_y
 
-    def moveBy(self,new_x,new_y):
-        return self.moveTo(self.x+new_x,self.y+new_y)
+    def moveBy(self,delta_x,delta_y):
+        return self.moveTo(self.x+delta_x,self.y+delta_y)
 
-    def displayTo(self,context,x,y,erase_mode,debug=False):
+    def displayTo(self,context,x,y,erase_mode=True,debug=False):
         myx = x
         myy = y
         if debug:
@@ -72,6 +72,13 @@ class Sprite:
     def display(self,context,erase_mode=False,debug=False):
         return Sprite.displayTo(self,context,self.x,self.y,erase_mode,debug)
     
+    # directionFilter not currently used
+    def stopped(self,directionFilter = [1,1], debug=False):
+        if self.dx == 0:
+            if self.dy == 0:
+                return True
+        return False
+    
     def eraseUpdateRedraw(self,context,debug=False):
         context = Sprite.displayTo(self,context,self.x,self.y,True,debug)
         self.update()
@@ -79,7 +86,7 @@ class Sprite:
     
     def checkOverlap(self,canvas, debug=False):
         if debug:
-            print("Checking collision for object now at " + str(self.x) + ":" + str(self.y))
+            print(" " + self.title + " checking while I'm at " + str(self.x) + ":" + str(self.y))
 
         newX = self.x
         for row in self.shapeData:
@@ -91,12 +98,12 @@ class Sprite:
                     if canvas[newX][newY] != Sprite.DEFAULT:
                         if debug:
                             print(" -- Overlap at " + str(newX) + ":" + str(newY) + " was " + canvas[newX][newY])
-                        return True
+                        return [newX,newY]
                     newY+=1
                     if newY >= len(canvas[newX]):
                         break
             newX+=1
-        pass
+        return None
     
     def updateWouldCollide(self,oldcontext,debug=False):
         if self.dx==0 and self.dy==0:
