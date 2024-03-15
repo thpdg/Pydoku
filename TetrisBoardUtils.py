@@ -11,7 +11,7 @@ class TetrisBoardUtils:
         "B": "\033[94m\u2593"
     }
 
-    def clear_board(graphics=None):
+    def clear_board(pimoroni=False, graphics=None):
         if sys.implementation.name == 'micropython':            
             graphics.remove_clip()
             graphics.set_pen(graphics.create_pen(0,0,0))
