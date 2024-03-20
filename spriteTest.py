@@ -1,4 +1,5 @@
 import time
+import sys
 import os
 from sprite import Sprite
 import random
@@ -29,6 +30,48 @@ canvas = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
           [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
           [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
           [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
+
+if sys.implementation.name == 'micropython':
+    from pimoroni_i2c import PimoroniI2C
+    from pimoroni import HEADER_I2C_PINS  # or PICO_EXPLORER_I2C_PINS or HEADER_I2C_PINS
+    from breakout_encoder_wheel import BreakoutEncoderWheel, UP, DOWN, LEFT, RIGHT, CENTRE, NUM_LEDS
+    from interstate75 import Interstate75, DISPLAY_INTERSTATE75_32X32
+
+    # Setup Interstate 75 Board
+    # Setup graphics for i75 LED board
+    i75 = Interstate75(display=DISPLAY_INTERSTATE75_32X32)
+    graphics = i75.display
+    width = i75.width
+    height = i75.height
+else:
+    graphics = None
+
+# Define Colors
+if sys.implementation.name == 'micropython':
+    WHITE = graphics.create_pen(64, 64, 64)
+    BLACK = graphics.create_pen(0,0,0)
+
+    BLUE = graphics.create_pen(0, 0, 255)
+    RED = graphics.create_pen(255, 0, 0)
+    YELLOW = graphics.create_pen(255,255,0)
+    GREEN = graphics.create_pen(0,255,0)
+    OFF_RED = graphics.create_pen(64, 0, 0)
+    BORDER_RED = graphics.create_pen(128, 0, 0)
+    OFF_YELLOW = graphics.create_pen(64,64,0)
+    OFF_GREEN = graphics.create_pen(0,64,0)
+    OFF_BLUE = graphics.create_pen(0, 0, 64)
+else:
+    BLACK = (0,0,0)
+    RED = (255, 0, 0)
+    BLUE = (0, 0, 255)
+    OFF_RED = (64, 0, 0)
+    YELLOW = (255,255,0)
+    GREEN = (0,255,0)
+    OFF_RED = (64, 0, 0)
+    BORDER_RED = (128, 0, 0)
+    OFF_YELLOW = (64,64,0)
+    OFF_GREEN = (0,64,0)
+    OFF_BLUE = (0,0,64)
 
 def clear_board():
 #     if sys.implementation.name == 'micropython':
@@ -96,7 +139,7 @@ for z in range(2000):
                     if _mainDebug: print(" Steering right")
                     aSprite.moveBy(0,1)
             
-    TetrisBoardUtils.drawBoardToScreen(canvas, True)
+    TetrisBoardUtils.drawBoardToScreen(canvas, True, graphics)
     print("Bottom line full? " + str(TetrisBoardUtils.bottomLineFilled(canvas)))
     print("First open space " + str(TetrisBoardUtils.firstOpenInBottomLine(canvas)))
     print("Target Gap is " + str(targetGap))
@@ -117,4 +160,4 @@ for z in range(2000):
         Sprites.append(newSprite())
 
 print("Final Board:")
-TetrisBoardUtils.drawBoardToScreen(canvas)
+TetrisBoardUtils.drawBoardToScreen(canvas, False, graphics)
