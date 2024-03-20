@@ -1,5 +1,3 @@
-import copy
-
 class Sprite:
     title = ""
 
@@ -14,6 +12,13 @@ class Sprite:
         self.y = y
         self.dx = 0
         self.dy = 0
+
+    def __copy__(self):
+        # self.normalizeArgs()
+        tempSprite = Sprite(self.title, self.color, self.x, self.y, Sprite.deepCopy(self.shapeData))
+        tempSprite.setSpeed(self.x,self.y)
+        tempSprite.rotation = self.rotation
+        return tempSprite
 
     def __str__(self) -> str:
         return f"{self.title}({self.color}){self.shapeData} at location {self.x}:{self.y} at pace {self.dx}:{self.dy}"
@@ -84,6 +89,29 @@ class Sprite:
         self.update()
         return Sprite.displayTo(self,context,self.x,self.y,False,debug)
     
+    def deepCopy(object1=None, debug=False) -> list:
+        if debug:
+            print("Deep copying object of type " + str(type(object1)) + ":")
+            print(object1)
+            print(":")
+
+        if object1 == None:
+            return None
+        
+        if type(object1) is list:
+            if type(object1[0]) is list:
+                newList = []
+                for thislist in object1:
+                    if type(thislist) is list:
+                        newList.append(thislist.copy())
+
+                Sprite.printData("Deep copy created object of type " + str(type(newList)) + ":",newList, debug)
+                return newList
+            
+        print("*!*!*! Deep Copy on unknown type")
+        return None
+
+    
     def checkOverlap(self,canvas, debug=False):
         if debug:
             print(" " + self.title + " checking while I'm at " + str(self.x) + ":" + str(self.y))
@@ -108,11 +136,14 @@ class Sprite:
     def updateWouldCollide(self,oldcontext,debug=False):
         if self.dx==0 and self.dy==0:
             return True
-        aClone = copy.deepcopy(self)
-        newContext = copy.deepcopy(oldcontext)
+        aClone = self.__copy__()
+        newContext = Sprite.deepCopy(oldcontext)
+        Sprite.printData("uWC oldContext:",oldcontext, debug)
+        Sprite.printData("uWC newContext:",newContext, debug)
 
         # Remove object from context to avoid self collision
         context = Sprite.displayTo(self,newContext,aClone.x,aClone.y,True,False)
+        Sprite.printData("uWC After Removal", context, debug)
 
         aClone.update()
 
@@ -120,6 +151,8 @@ class Sprite:
             print("Checking collision for object now at " + str(aClone.x) + ":" + str(aClone.y))
 
         newX = aClone.x
+        Sprite.printData("self.shapeData",self.shapeData, debug)
+        Sprite.printData("aClone.shapeData",aClone.shapeData, debug)
         for row in aClone.shapeData:
             if newX < len(context):
                 if debug:
@@ -129,10 +162,15 @@ class Sprite:
                     if debug:
                         print("  Checking for overlap at " + str(newX) + ":" + str(newY))
                     if pixel == 1:
-                        if context[newX][newY] != Sprite.DEFAULT:
-                            if debug:
-                                print(" -- Overlap at " + str(newX) + ":" + str(newY) + " was " + context[newX][newY])
-                            return True
+                        try:
+                            if context[newX][newY] != Sprite.DEFAULT:
+                                if debug:
+                                    print(" -- Overlap at " + str(newX) + ":" + str(newY) + " was " + context[newX][newY])
+                                return True
+                        except:
+                            print("Failed to compare at " + str(newX) + ":" + str(newY))
+                            Sprite.printData("Board Data Was:", context)
+
                     newY+=1
                     if newY >= len(context[newX]):
                         break
@@ -144,10 +182,13 @@ class Sprite:
                 return True
         return False
 
-    def printData(label="", data=[]):
+    def printData(label="", data=[], debug=False):
+        if not debug:
+            return
         print(label)
         for i in range(len(data)):
-            for j in range(10):
+            print("" + str(i) + ":\t", end="")
+            for j in range(len(data[i])):
                 print(data[i][j], end=" ")
             print()
         print()

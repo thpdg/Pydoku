@@ -11,16 +11,17 @@ class TetrisBoardUtils:
         "B": "\033[94m\u2593"
     }
 
-    def clear_board(pimoroni=False, graphics=None):
-        if sys.implementation.name == 'micropython':            
-            graphics.remove_clip()
-            graphics.set_pen(graphics.create_pen(0,0,0))
-            graphics.clear()
+    def clear_board(graphics=None):
+        if sys.implementation.name == 'micropython':
+            if graphics is not None:        
+                graphics.remove_clip()
+                graphics.set_pen(graphics.create_pen(0,0,0))
+                graphics.clear()
         else:
             os.system('cls' if os.name == 'nt' else 'clear')
 
-    def drawBoardToScreen(boardData,clear_board = False):
-        TetrisBoardUtils.clear_board() if clear_board else None
+    def drawBoardToScreen(boardData,clear_board = False, graphics=None):
+        TetrisBoardUtils.clear_board(graphics) if clear_board else None
         for row in boardData:
             for pixel in row:
                 print(TetrisBoardUtils.colorTable[pixel] + TetrisBoardUtils.colorTable[pixel],end="")
