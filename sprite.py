@@ -175,7 +175,7 @@ class Sprite:
                                 return True
                         except:
                             print("Failed to compare at " + str(newX) + ":" + str(newY))
-                            Sprite.printData("Board Data Was:", context)
+                            Sprite.printData("Board Data Was:", context, True)
 
                     newY+=1
                     if newY >= len(context[newX]):
@@ -189,7 +189,10 @@ class Sprite:
         return False
 
     @staticmethod
-    def printData(label="", data=None):
+    def printData(label="", data=None, debug=True):
+        if not debug:
+            return
+        
         print(label)
         if data is None:
             return
