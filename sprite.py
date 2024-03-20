@@ -19,7 +19,7 @@ class Sprite:
     def __copy__(self):
         # self.normalizeArgs()
         tempSprite = Sprite(self.title, self.color, self.x, self.y, Sprite.deepCopy(self.shapeData))
-        tempSprite.setSpeed(self.x,self.y)
+        tempSprite.setSpeed(self.dx,self.dy)
         tempSprite.rotation = self.rotation
         return tempSprite
 
@@ -139,10 +139,13 @@ class Sprite:
         return None
     
     def updateWouldCollide(self,oldcontext,debug=False):
+        print("uWC for piece at " + str(self.x) + ":" + str(self.y))
         if self.dx==0 and self.dy==0:
             if debug: print("uWC: Piece not moving")
             return True
         aClone = self.__copy__()
+        print(self)
+        print(aClone)
         newContext = Sprite.deepCopy(oldcontext)
         Sprite.printData("uWC oldContext:",oldcontext, debug)
         Sprite.printData("uWC newContext:",newContext, debug)
@@ -154,7 +157,7 @@ class Sprite:
         aClone.update()
 
         if debug:
-            print("Checking collision for object now at " + str(aClone.x) + ":" + str(aClone.y))
+            print("uWC: Checking collision for object now at " + str(aClone.x) + ":" + str(aClone.y))
 
         newX = aClone.x
         Sprite.printData("self.shapeData",self.shapeData, debug)

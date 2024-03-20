@@ -125,9 +125,9 @@ for z in range(2000):
             aSprite.setSpeed(0,0)
 
         # Random rotations
-        rotationCount = random.randint(0,4)
-        for rc in range(rotationCount+1):
-            aSprite.rotate90()
+        # rotationCount = random.randint(0,4)
+        # for rc in range(rotationCount+1):
+        #     aSprite.rotate90()
 
         if _mainAutosteer:
             print("Autosteer Comparing " + str(aSprite.y) + ":" + str(targetGap))
