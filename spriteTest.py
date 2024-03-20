@@ -36,7 +36,7 @@ def clear_board():
 #         graphics.set_pen(BLACK)
 #         graphics.clear()
 #     else:
-     os.system('cls' if os.name == 'nt' else 'clear')
+    os.system('cls' if os.name == 'nt' else 'clear')
 
 
 # Creates a new random sprite for testing
@@ -48,19 +48,20 @@ def newSprite(index = 0, debug = False) -> Sprite:
     return sprite
 
 
+# Initialize piece tracking variables and game status
+_mainDebug = True
+_mainAutosteer = False
+targetGap = 0
+highestBlock = 0
+
 if __name__ == "__main__":
-    _mainDebug = True
-    _mainAutosteer = False
     clear_board()   # Clear board and terminal to begin game
 
     # Create and place a starting piece
     Sprites.append(newSprite(1))
 
-Sprite.printData("Blank:",canvas) if _mainDebug else None
-
-# Initialize piece tracking variables and game status
-targetGap = 0
-highestBlock = 0
+# Display initial empty board. Helps to visually confirm board shape and size
+if _mainDebug: Sprite.printData("Blank:",canvas)
 
 # Generate and move up to 2000 tetris blocks for testing
 for z in range(2000):
@@ -72,22 +73,27 @@ for z in range(2000):
     for aSprite in Sprites:
         if aSprite.stopped():   # Skip blocks that aren't moving
             continue
-            
-        if not aSprite.updateWouldCollide(canvas, False):
+
+        if not aSprite.updateWouldCollide(canvas, True):
             aSprite.eraseUpdateRedraw(canvas)
             moved = True
         else:
             print("Piece stopped")
             aSprite.setSpeed(0,0)
 
+        # Random rotations
+        rotationCount = random.randint(0,4)
+        for rc in range(rotationCount+1):
+            aSprite.rotate90()
+
         if _mainAutosteer:
             print("Autosteer Comparing " + str(aSprite.y) + ":" + str(targetGap))
             if aSprite.y > targetGap:
-                print(" Steering left") if _mainDebug else None
+                if _mainDebug: print(" Steering left")
                 aSprite.moveBy(0,-1)
             else:
                 if aSprite.y < targetGap:
-                    print(" Steering right") if _mainDebug else None
+                    if _mainDebug: print(" Steering right")
                     aSprite.moveBy(0,1)
             
     TetrisBoardUtils.drawBoardToScreen(canvas, True)

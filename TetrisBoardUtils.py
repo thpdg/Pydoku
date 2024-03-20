@@ -11,16 +11,18 @@ class TetrisBoardUtils:
         "B": "\033[94m\u2593"
     }
 
-    def clear_board(pimoroni=False, graphics=None):
-        if sys.implementation.name == 'micropython':            
+    @staticmethod
+    def clear_board(graphics=None) -> None:
+        if (graphics is not None) and sys.implementation.name == 'micropython':            
             graphics.remove_clip()
             graphics.set_pen(graphics.create_pen(0,0,0))
             graphics.clear()
-        else:
-            os.system('cls' if os.name == 'nt' else 'clear')
+        #else:
+        os.system('cls' if os.name == 'nt' else 'clear')
 
+    @staticmethod
     def drawBoardToScreen(boardData,clear_board = False):
-        TetrisBoardUtils.clear_board() if clear_board else None
+        if clear_board: TetrisBoardUtils.clear_board()
         for row in boardData:
             for pixel in row:
                 print(TetrisBoardUtils.colorTable[pixel] + TetrisBoardUtils.colorTable[pixel],end="")
@@ -32,37 +34,44 @@ class TetrisBoardUtils:
         # print(u'\033[40m\u2517\u2501\u251B\033[m')
         pass
 
+    @staticmethod
     def bottomLineFilled(boardData, debug = False):
         bottomLine = boardData[-1]
         count = bottomLine.count(0)
-        print("Free squares: " + str(count))
+        if debug: print("Free squares: " + str(count))
         if count == 0:
             return True
         return False
 
-    def firstOpenInBottomLine(boardData, debug = False):
+    @staticmethod
+    def firstOpenInBottomLine(boardData, debug=False) -> int:
         bottomLine = boardData[-1]
         count = 0
         for pixel in bottomLine:
             if pixel == 0:
+                if debug: print("Found open space in bottom line at " + str(count))
                 return count
             count+=1
+        if debug: print("No open space found in bottom line")
         return 99
 
+    @staticmethod
     def highestBlock(boardData, debug=False):
         rowNumber = 0
         for row in boardData:
             for pixel in row:
                 if pixel != 0:
+                    if debug: print("High located block in board data is at " + str(len(boardData)-rowNumber) + "(" + str(rowNumber) + ")")
                     return len(boardData)-rowNumber
             rowNumber+=1
         return len(boardData)
     
+    @staticmethod
     # Determines if board is full by examining top row for any present block
     def IsBoardFull(boardData, debug=False):
-        print(boardData[0]) if debug else None
+        if debug: print(boardData[0])
         for pixel in boardData[0]:
-            print(pixel) if debug else None
+            if debug: print(pixel)
             if pixel != 0:
                 return True
         return False

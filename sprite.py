@@ -5,10 +5,13 @@ class Sprite:
 
     DEFAULT = 0
 
-    def __init__(self, title, color, x=0,y=0,shapeData=[]):
+    def __init__(self, title, color, x=0,y=0,shapeData=None):
         self.title = title
         self.color = color
-        self.shapeData = shapeData
+        if shapeData is None:
+            self.shapeData = []
+        else:
+            self.shapeData = shapeData
         self.rotation = 0
         self.x = x
         self.y = y
@@ -32,9 +35,11 @@ class Sprite:
         self.dx = new_dx
         self.dy = new_dy
 
-    def update(self,ticks=1):
-        self.x+=self.dx
-        self.y+=self.dy
+    def update(self,ticks=1, debug=False):
+        for tick in range(ticks):
+            if debug: print("Update sprite " + self.title + " on tick " + str(tick))
+            self.x+=self.dx
+            self.y+=self.dy
 
     def moveTo(self,new_x,new_y):
         self.x = new_x
@@ -46,8 +51,7 @@ class Sprite:
     def displayTo(self,context,x,y,erase_mode=True,debug=False):
         myx = x
         myy = y
-        if debug:
-            print("starting overlay at " + str(x) + ":" + str(y))
+        if debug: print("starting overlay at " + str(myx) + ":" + str(myy))
 
         for row in self.shapeData:
             myy = y
@@ -72,10 +76,11 @@ class Sprite:
     def display(self,context,erase_mode=False,debug=False):
         return Sprite.displayTo(self,context,self.x,self.y,erase_mode,debug)
     
-    # directionFilter not currently used
-    def stopped(self,directionFilter = [1,1], debug=False):
+    # Filters not currently used
+    def stopped(self,checkX=True,checkY=True, debug=False):
         if self.dx == 0:
             if self.dy == 0:
+                if debug: print("Sprite " + self.title + " stopped filter (" + str(checkX) + ":" + str(checkY) + ")")
                 return True
         return False
     
@@ -107,7 +112,10 @@ class Sprite:
     
     def updateWouldCollide(self,oldcontext,debug=False):
         if self.dx==0 and self.dy==0:
+            if debug: print("uWC: Piece not moving")
             return True
+        
+        # Copy piece and context
         aClone = copy.deepcopy(self)
         newContext = copy.deepcopy(oldcontext)
 
@@ -144,8 +152,11 @@ class Sprite:
                 return True
         return False
 
-    def printData(label="", data=[]):
+    @staticmethod
+    def printData(label="", data=None):
         print(label)
+        if data is None:
+            return
         for i in range(len(data)):
             for j in range(10):
                 print(data[i][j], end=" ")

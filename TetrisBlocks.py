@@ -31,18 +31,26 @@ class TetrisBlocks:
     SpriteShapes = [S,Sq,Z,T,L,J,I]
     Colors = ["R","Y","G","B","V"]
 
+    @staticmethod
     # Returns a random block color from the known colors. Allows exclusion of undesired colors (For creating pallets, most likely)
-    def RandomBlockColor(exclusions=[]):
+    def RandomBlockColor(exclusions=None):
         import random
+
+        if exclusions is None:
+            exclusions = []
 
         while True:
             randomColor = TetrisBlocks.Colors[random.randrange(len(TetrisBlocks.Colors))]
             if randomColor not in exclusions:
                 return randomColor
-            
+
+    @staticmethod  
     # Returns a random block shape from the known collection.  Allows exclusion of undesired (for creating challenges, most likely)
-    def RandomBlockShape(exclusions=[]):
+    def RandomBlockShape(exclusions=None):
         import random
+
+        if exclusions is None:
+            exclusions = []
 
         while True:
             randomShape = TetrisBlocks.SpriteShapes[random.randrange(len(TetrisBlocks.SpriteShapes))]
