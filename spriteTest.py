@@ -43,11 +43,6 @@ if sys.implementation.name == 'micropython':
     graphics = i75.display
     width = i75.width
     height = i75.height
-else:
-    graphics = None
-
-# Define Colors
-if sys.implementation.name == 'micropython':
     WHITE = graphics.create_pen(64, 64, 64)
     BLACK = graphics.create_pen(0,0,0)
 
@@ -60,7 +55,10 @@ if sys.implementation.name == 'micropython':
     OFF_YELLOW = graphics.create_pen(64,64,0)
     OFF_GREEN = graphics.create_pen(0,64,0)
     OFF_BLUE = graphics.create_pen(0, 0, 64)
+
 else:
+    graphics = None
+    WHITE = (255,255,255)
     BLACK = (0,0,0)
     RED = (255, 0, 0)
     BLUE = (0, 0, 255)
@@ -84,7 +82,7 @@ def clear_board():
 
 # Creates a new random sprite for testing
 def newSprite(index = 0, debug = False) -> Sprite:
-    sprite = Sprite("Block" + str(index),TetrisBlocks.RandomBlockColor(),0,random.randrange(9),TetrisBlocks.RandomBlockShape())
+    sprite = Sprite("Block" + str(index),TetrisBlocks.RandomBlockColor(),0,random.randrange(0,9),TetrisBlocks.RandomBlockShape())
     sprite.setSpeed(1,0)
     if debug:
         print(sprite)

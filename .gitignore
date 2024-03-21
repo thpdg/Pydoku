@@ -6,4 +6,5 @@ __pycache__/TetrisBoardUtils.cpython-310.pyc
 /__pycache__
 /build
 /dist
+/typings
 spriteTest.spec

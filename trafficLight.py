@@ -50,6 +50,8 @@ def clear_board():
         os.system('cls' if os.name == 'nt' else 'clear')
 
 def displaySignal(signalState=None, debug=False):
+    if signalState is None:
+        return
     BLUE_MODE = True
     if debug:
         print("Next...")

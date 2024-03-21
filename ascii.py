@@ -88,7 +88,7 @@ def find_empty_location(board):
     return None, None
 
 def solve_sudoku_no_recursion2(board):
-    stack = [(0, 0)]  # Stack to store (row, col) pairs
+    stack = [(int(0), int(0))]  # Stack to store (row, col) pairs
     while stack:
         row, col = stack[-1]
         print("Starting Row " + str(row) + " col " + str(col))
@@ -116,7 +116,7 @@ def solve_sudoku_no_recursion2(board):
 
 
 def solve_sudoku_no_recursion(board):
-    stack = [(0, 0)]  # Stack to store (row, col) pairs
+    stack = [(int(0), int(0))]  # Stack to store (row, col) pairs
     while stack:
         row, col = stack.pop()
 
