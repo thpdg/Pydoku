@@ -161,3 +161,6 @@ for z in range(2000):
 
 print("Final Board:")
 TetrisBoardUtils.drawBoardToScreen(canvas, False, graphics)
+
+# Reset console before exiting
+print()

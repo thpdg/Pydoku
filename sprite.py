@@ -94,7 +94,8 @@ class Sprite:
         self.update()
         return Sprite.displayTo(self,context,self.x,self.y,False,debug)
     
-    def deepCopy(object1=None, debug=False) -> list:
+    @staticmethod
+    def deepCopy(object1=None, debug=False) -> list | None:
         if debug:
             print("Deep copying object of type " + str(type(object1)) + ":")
             print(object1)
