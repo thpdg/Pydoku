@@ -72,12 +72,12 @@ else:
     OFF_BLUE = (0,0,64)
 
 def clear_board():
-#     if sys.implementation.name == 'micropython':
-#         graphics.remove_clip()
-#         graphics.set_pen(BLACK)
-#         graphics.clear()
-#     else:
-    os.system('cls' if os.name == 'nt' else 'clear')
+     if sys.implementation.name == 'micropython':
+         graphics.remove_clip()
+         graphics.set_pen(BLACK)
+         graphics.clear()
+     else:
+         os.system('cls' if os.name == 'nt' else 'clear')
 
 
 # Creates a new random sprite for testing
@@ -137,7 +137,7 @@ for z in range(2000):
                     if _mainDebug: print(" Steering right")
                     aSprite.moveBy(0,1)
             
-    TetrisBoardUtils.drawBoardToScreen(canvas, True, graphics)
+    TetrisBoardUtils.drawBoardToScreen(canvas, True, i75)
     print("Bottom line full? " + str(TetrisBoardUtils.bottomLineFilled(canvas)))
     print("First open space " + str(TetrisBoardUtils.firstOpenInBottomLine(canvas)))
     print("Target Gap is " + str(targetGap))
@@ -158,7 +158,7 @@ for z in range(2000):
         Sprites.append(newSprite())
 
 print("Final Board:")
-TetrisBoardUtils.drawBoardToScreen(canvas, False, graphics)
+TetrisBoardUtils.drawBoardToScreen(canvas, False, i75)
 
 # Reset console before exiting
 print()

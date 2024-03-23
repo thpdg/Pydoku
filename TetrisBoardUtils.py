@@ -1,5 +1,8 @@
+from interstate75 import Interstate75
+from picographics import PicoGraphics
 import sys
 import os
+from LEDColorTable import LEDColorTable
 
 class TetrisBoardUtils:
     colorTable = {
@@ -14,14 +17,22 @@ class TetrisBoardUtils:
     @staticmethod
     def clear_board(graphics=None) -> None:
         if (graphics is not None) and sys.implementation.name == 'micropython':            
+            TheColorTable = LEDColorTable.CreateColorTable(graphics)
+            print("The color table: " + str(TheColorTable))
+            if graphics is None: print("Can't clear screen wihtout context")
             graphics.remove_clip()
-            graphics.set_pen(graphics.create_pen(0,0,0))
+            graphics.set_pen(LEDColorTable.LEDColorTable["Black"])
             graphics.clear()
         #else:
         os.system('cls' if os.name == 'nt' else 'clear')
 
     @staticmethod
-    def drawBoardToScreen(boardData,clear_board = False, graphics=None):
+    def drawBoardToScreen(boardData,clear_board = False, i75: Interstate75|None = None):
+        if i75 is not None:
+            graphics = i75.display
+        else:
+            graphics = None
+
         if clear_board: TetrisBoardUtils.clear_board(graphics)
         for row in boardData:
             for pixel in row:
@@ -30,9 +41,21 @@ class TetrisBoardUtils:
             for pixel in row:
                 print(TetrisBoardUtils.colorTable[pixel] + TetrisBoardUtils.colorTable[pixel],end="")    
             print()
+        if i75 is None:
+            return
+        graphics = i75.display
+
         # print(u'\033[40m\u2503\033[91m' + ('\u25CF' if pixel == "R" else '\u25AE\u2588\u2593\u2588\u2593') + '\033[0;40m\u2503\033[m')
         # print(u'\033[40m\u2517\u2501\u251B\033[m')
-        pass
+        tempx = 0
+        for row in boardData:
+            tempy = 0
+            for pixel in row:
+                graphics.set_pen(LEDColorTable.LEDColorTable[pixel])
+                graphics.pixel(tempx,tempy)
+
+        i75.update()
+        
 
     @staticmethod
     def bottomLineFilled(boardData, debug = False):
