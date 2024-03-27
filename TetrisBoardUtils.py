@@ -18,13 +18,15 @@ class TetrisBoardUtils:
     def clear_board(graphics=None) -> None:
         if (graphics is not None) and sys.implementation.name == 'micropython':            
             TheColorTable = LEDColorTable.CreateColorTable(graphics)
+            if TheColorTable is None:
+                return None
             print("The color table: " + str(TheColorTable))
             if graphics is None: print("Can't clear screen wihtout context")
             graphics.remove_clip()
-            graphics.set_pen(LEDColorTable.LEDColorTable["Black"])
+            graphics.set_pen(TheColorTable["Black"])
             graphics.clear()
-        #else:
-        os.system('cls' if os.name == 'nt' else 'clear')
+        else:
+            os.system('cls' if os.name == 'nt' else 'clear')
 
     @staticmethod
     def drawBoardToScreen(boardData,clear_board = False, i75: Interstate75|None = None):
@@ -32,7 +34,9 @@ class TetrisBoardUtils:
             graphics = i75.display
         else:
             graphics = None
-
+        TheColorTable = LEDColorTable.CreateColorTable(graphics)
+        if TheColorTable is None:
+            return None
         if clear_board: TetrisBoardUtils.clear_board(graphics)
         for row in boardData:
             for pixel in row:
@@ -42,6 +46,7 @@ class TetrisBoardUtils:
                 print(TetrisBoardUtils.colorTable[pixel] + TetrisBoardUtils.colorTable[pixel],end="")    
             print()
         if i75 is None:
+            print("No LEDs. Skipping LEDs")
             return
         graphics = i75.display
 
@@ -51,10 +56,14 @@ class TetrisBoardUtils:
         for row in boardData:
             tempy = 0
             for pixel in row:
-                graphics.set_pen(LEDColorTable.LEDColorTable[pixel])
-                graphics.pixel(tempx,tempy)
+                graphics.set_pen(TheColorTable[pixel])
+                graphics.pixel(tempy,tempx)
+                #print("Drew pixel at " + str(tempx) + ":" + str(tempy))
+                tempy+=1
+            tempx+=1
 
         i75.update()
+        #time.sleep(1)
         
 
     @staticmethod

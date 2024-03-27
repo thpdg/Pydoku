@@ -194,6 +194,7 @@ class Sprite:
 
     @staticmethod
     def printData(label="", data=None, debug=True):
+        return
         if not debug:
             return
         
