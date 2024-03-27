@@ -125,8 +125,9 @@ def reduce_board_permutations(board,block_size=3):
 
     all_good_perms = []*9
     rough_block_number = 0
-
+    print("Generating all permutations")
     all_permutations = generate_all_permutations('123456789')
+    print("Generated all permutations")
 
     for current_block_row in range(3):
         for current_block_col in range(3):
@@ -176,7 +177,7 @@ if __name__ == "__main__":
     # print()
     start_time = time.time()
     
-    this_board = return_test_board()
+    this_board = return_test_board_2()
     print_board(this_board)
 
     
