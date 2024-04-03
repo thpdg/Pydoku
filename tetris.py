@@ -64,15 +64,15 @@ def displayBoard(piece_list=None, debug=False):
     # print(u'\033[40m\u2503\033[93m' + ('\u25CF' if signalState[1] == YELLOW else '\u25CB') + '\033[0;40m\u2503\033[m')
     # print(u'\033[40m\u2503\033[92m' + ('\u25CF' if signalState[2] == GREEN else '\u25CB') + '\033[0;40m\u2503\033[m')
     # print(u'\033[40m\u2517\u2501\u251B\033[m')
-    if sys.implementation.name == 'micropython':
-        graphics.set_pen(signalState[0])
-        graphics.circle(16, 5, 4)
-        graphics.set_pen(signalState[1])
-        graphics.circle(16, 15, 4)
-        graphics.set_pen(signalState[2])
-        graphics.circle(16, 25, 4)
-        i75.update()
-    time.sleep(sleep_time)
+    # if sys.implementation.name == 'micropython':
+    #     graphics.set_pen(signalState[0])
+    #     graphics.circle(16, 5, 4)
+    #     graphics.set_pen(signalState[1])
+    #     graphics.circle(16, 15, 4)
+    #     graphics.set_pen(signalState[2])
+    #     graphics.circle(16, 25, 4)
+    #     i75.update()
+    # time.sleep(sleep_time)
     
 
 clear_board()
