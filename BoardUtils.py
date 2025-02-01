@@ -1,3 +1,4 @@
+import random
 from genperm import generate_all_permutations
 import time
 
@@ -95,6 +96,18 @@ def print_board(board, spacing=0):
         for i in range(spacing):
             print(" ",end="")
         print(board[row])
+
+def return_random_board(sizex,sizey):
+    out_board = []
+    print("Making board that is " + str(sizex) + " by " + str(sizey))
+    for row in range(sizex):
+        # print("Working on row " + str(row))
+        arow=[]
+        for col in range(sizey):
+            # print("Working on col " + str(col))
+            arow.append(random.randrange(0,9))
+        out_board.append(arow)
+    return out_board
 
 def return_test_board():
     return [[5, 3, 0, 0, 7, 0, 0, 0, 0],
