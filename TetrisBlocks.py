@@ -40,7 +40,7 @@ class TetrisBlocks:
             exclusions = []
 
         while True:
-            randomColor = TetrisBlocks.Colors[random.randrange(len(TetrisBlocks.Colors))]
+            randomColor = TetrisBlocks.Colors[random.randrange(0,len(TetrisBlocks.Colors))]
             if randomColor not in exclusions:
                 return randomColor
 
@@ -53,6 +53,6 @@ class TetrisBlocks:
             exclusions = []
 
         while True:
-            randomShape = TetrisBlocks.SpriteShapes[random.randrange(len(TetrisBlocks.SpriteShapes))]
+            randomShape = TetrisBlocks.SpriteShapes[random.randrange(0,len(TetrisBlocks.SpriteShapes))]
             if randomShape not in exclusions:
                 return randomShape
