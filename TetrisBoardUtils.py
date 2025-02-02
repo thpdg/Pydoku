@@ -16,6 +16,7 @@ else:
         pass
 
 class TetrisBoardUtils:
+    # TODO: Expand color table to further ANSI colors
     colorTable = {
         0: "\033[30m\u2588",
         "R": "\033[91m\u2593",

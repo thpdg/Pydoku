@@ -74,7 +74,8 @@ else:
 
 # Creates a new random Tetris shape sprite for testing
 def newSprite(index = 0, debug = False) -> Sprite:
-    sprite = Sprite("Block" + str(index),TetrisBlocks.RandomBlockColor(),0,random.randrange(0,9),TetrisBlocks.RandomBlockShape())
+    #sprite = Sprite("Block" + str(index),TetrisBlocks.RandomBlockColor(["R","B","V"]),0,random.randrange(0,10),TetrisBlocks.RandomBlockShape([TetrisBlocks.S,TetrisBlocks.Sq,TetrisBlocks.Z,TetrisBlocks.T,TetrisBlocks.L,TetrisBlocks.J]))
+    sprite = Sprite("Block" + str(index),TetrisBlocks.RandomBlockColor(),0,random.randrange(0,10),TetrisBlocks.RandomBlockShape())
     sprite.setSpeed(1,0)
     if debug:
         print(sprite)
