@@ -1,8 +1,19 @@
-from interstate75 import Interstate75
-from picographics import PicoGraphics
+
 import sys
 import os
 from LEDColorTable import LEDColorTable
+
+if sys.implementation.name == 'micropython':
+    from interstate75 import Interstate75
+    from picographics import PicoGraphics
+else:
+    class Interstate75:
+        def update(self):
+            pass
+        def display(self):
+            pass
+    class PicoGraphics:
+        pass
 
 class TetrisBoardUtils:
     colorTable = {
@@ -29,7 +40,7 @@ class TetrisBoardUtils:
             os.system('cls' if os.name == 'nt' else 'clear')
 
     @staticmethod
-    def drawBoardToScreen(boardData,clear_board = False, i75: Interstate75|None = None):
+    def drawBoardToLEDs(boardData,clear_board = False, i75: Interstate75|None = None):
         if i75 is not None:
             graphics = i75.display
         else:
@@ -64,7 +75,19 @@ class TetrisBoardUtils:
 
         i75.update()
         #time.sleep(1)
-        
+
+    @staticmethod
+    def drawBoardToTerminal(boardData,clear_board = False):
+        if clear_board: TetrisBoardUtils.clear_board(None)
+        for row in boardData:
+            for pixel in row:
+                print(TetrisBoardUtils.colorTable[pixel] + TetrisBoardUtils.colorTable[pixel],end="")
+            print()
+            for pixel in row:
+                print(TetrisBoardUtils.colorTable[pixel] + TetrisBoardUtils.colorTable[pixel],end="")    
+            print()
+
+        print("\033[92m",end="")    
 
     @staticmethod
     def bottomLineFilled(boardData, debug = False):

@@ -58,6 +58,7 @@ if sys.implementation.name == 'micropython':
 
 else:
     graphics = None
+    i75 = None
     WHITE = (255,255,255)
     BLACK = (0,0,0)
     RED = (255, 0, 0)
@@ -71,7 +72,7 @@ else:
     OFF_GREEN = (0,64,0)
     OFF_BLUE = (0,0,64)
 
-def clear_board():
+def clear_boardzzz():
      if sys.implementation.name == 'micropython':
          graphics.remove_clip()
          graphics.set_pen(BLACK)
@@ -80,7 +81,7 @@ def clear_board():
          os.system('cls' if os.name == 'nt' else 'clear')
 
 
-# Creates a new random sprite for testing
+# Creates a new random Tetris shape sprite for testing
 def newSprite(index = 0, debug = False) -> Sprite:
     sprite = Sprite("Block" + str(index),TetrisBlocks.RandomBlockColor(),0,random.randrange(0,9),TetrisBlocks.RandomBlockShape())
     sprite.setSpeed(1,0)
@@ -90,13 +91,13 @@ def newSprite(index = 0, debug = False) -> Sprite:
 
 
 # Initialize piece tracking variables and game status
-_mainDebug = True
+_mainDebug = False
 _mainAutosteer = False
 targetGap = 0
 highestBlock = 0
 
 if __name__ == "__main__":
-    clear_board()   # Clear board and terminal to begin game
+    TetrisBoardUtils.clear_board()   # Clear board and terminal to begin game
 
     # Create and place a starting piece
     Sprites.append(newSprite(1))
@@ -106,7 +107,7 @@ if _mainDebug: Sprite.printData("Blank:",canvas)
 
 # Generate and move up to 2000 tetris blocks for testing
 for z in range(2000):
-    if TetrisBoardUtils.IsBoardFull(boardData=canvas, debug=False):
+    if TetrisBoardUtils.IsBoardFull(boardData=canvas, debug=_mainDebug):
         print("Board Full at " + str(z))
         break
     moved = False
@@ -115,11 +116,11 @@ for z in range(2000):
         if aSprite.stopped():   # Skip blocks that aren't moving
             continue
 
-        if not aSprite.updateWouldCollide(canvas, True):
+        if not aSprite.updateWouldCollide(canvas, _mainDebug):
             aSprite.eraseUpdateRedraw(canvas)
             moved = True
         else:
-            print("Piece stopped")
+            if _mainDebug: print("Piece stopped")
             aSprite.setSpeed(0,0)
 
         # Random rotations
@@ -137,7 +138,11 @@ for z in range(2000):
                     if _mainDebug: print(" Steering right")
                     aSprite.moveBy(0,1)
             
-    TetrisBoardUtils.drawBoardToScreen(canvas, True, i75)
+    if i75 == None:        
+        TetrisBoardUtils.drawBoardToTerminal(canvas, True)
+    else:
+        TetrisBoardUtils.drawBoardToLEDs(canvas, True, i75)
+
     print("Bottom line full? " + str(TetrisBoardUtils.bottomLineFilled(canvas)))
     print("First open space " + str(TetrisBoardUtils.firstOpenInBottomLine(canvas)))
     print("Target Gap is " + str(targetGap))
@@ -158,7 +163,10 @@ for z in range(2000):
         Sprites.append(newSprite())
 
 print("Final Board:")
-TetrisBoardUtils.drawBoardToScreen(canvas, False, i75)
+if i75 == None:
+    TetrisBoardUtils.drawBoardToTerminal(canvas, False)
+else:
+    TetrisBoardUtils.drawBoardToLEDs(canvas, False, i75)
 
 # Reset console before exiting
 print()

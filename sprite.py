@@ -24,7 +24,7 @@ class Sprite:
         return tempSprite
 
     def __str__(self) -> str:
-        return f"{self.title}({self.color}){self.shapeData} at location {self.x}:{self.y} at pace {self.dx}:{self.dy}"
+        return f"{self.title}({self.color}){self.shapeData} at location {self.x}:{self.y} at pace {self.dx}:{self.dy}========================================="
 
     def rotate90(self, debug=False):
         # Rotate the piece 90 degrees clockwise
@@ -140,13 +140,13 @@ class Sprite:
         return None
     
     def updateWouldCollide(self,oldcontext,debug=False):
-        print("uWC for piece at " + str(self.x) + ":" + str(self.y))
+        if debug: print("uWC for piece at " + str(self.x) + ":" + str(self.y))
         if self.dx==0 and self.dy==0:
             if debug: print("uWC: Piece not moving")
             return True
         aClone = self.__copy__()
-        print(self)
-        print(aClone)
+        # print(self)
+        # print(aClone)
         newContext = Sprite.deepCopy(oldcontext)
         Sprite.printData("uWC oldContext:",oldcontext, debug)
         Sprite.printData("uWC newContext:",newContext, debug)
@@ -188,19 +188,18 @@ class Sprite:
             # if debug:
             #     print("X is now " + str(newX) + " and length is " + str(len(context)))
             if newX > len(context): # Off bottom of screen
-                print("  -- Off bottom of screen")
+                if debug: print("  -- Off bottom of screen")
                 return True
         return False
 
     @staticmethod
     def printData(label="", data=None, debug=True):
-        return
         if not debug:
-            return
-        
-        print(label)
+            return       
+        print(label)        
         if data is None:
             return
+        return # To clean up testing
         for i in range(len(data)):
             print("" + str(i) + ":\t", end="")
             for j in range(len(data[i])):
