@@ -72,15 +72,6 @@ else:
     OFF_GREEN = (0,64,0)
     OFF_BLUE = (0,0,64)
 
-def clear_boardzzz():
-     if sys.implementation.name == 'micropython':
-         graphics.remove_clip()
-         graphics.set_pen(BLACK)
-         graphics.clear()
-     else:
-         os.system('cls' if os.name == 'nt' else 'clear')
-
-
 # Creates a new random Tetris shape sprite for testing
 def newSprite(index = 0, debug = False) -> Sprite:
     sprite = Sprite("Block" + str(index),TetrisBlocks.RandomBlockColor(),0,random.randrange(0,9),TetrisBlocks.RandomBlockShape())
@@ -88,7 +79,6 @@ def newSprite(index = 0, debug = False) -> Sprite:
     if debug:
         print(sprite)
     return sprite
-
 
 # Initialize piece tracking variables and game status
 _mainDebug = False
@@ -120,7 +110,7 @@ for z in range(2000):
             aSprite.eraseUpdateRedraw(canvas)
             moved = True
         else:
-            if _mainDebug: print("Piece stopped")
+            if _mainDebug:print("Piece stopped")
             aSprite.setSpeed(0,0)
 
         # Random rotations
@@ -170,3 +160,6 @@ else:
 
 # Reset console before exiting
 print()
+
+for asprite in Sprites:
+    print(asprite)
