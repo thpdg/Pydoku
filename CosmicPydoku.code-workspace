@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"name": "pimoroni-pico",
+			"path": "../../pimoroni-pico"
+		}
+	],
+	"settings": {
+		"python.languageServer": "Pylance"
+	}
+}
