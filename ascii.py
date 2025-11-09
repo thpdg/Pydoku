@@ -40,6 +40,7 @@ if sys.implementation.name == 'micropython':
 
     led_mapping = {0: BLACK, 1: RED, 2: BLUE, 3: GREEN, 4: YELLOW, 5:PINK, 6:ORANGE, 7:CYAN, 8:PURPLE, 9:SALMON}
 color_mapping = {0: " ", 1: "\033[91m█\033[0m", 2: "\033[94m█\033[0m", 3: "\033[92m█\033[0m", 4: "\033[93m█\033[0m", 5: "\033[95m█\033[0m", 6: "\033[33m█\033[0m", 7: "\033[96m█\033[0m", 8: "\033[35m█\033[0m", 9: "\033[37m█\033[0m"}
+color_mapping_big = {0: " ", 1: "\033[91m⣿\033[0m", 2: "\033[94m⣿\033[0m", 3: "\033[92m⣿\033[0m", 4: "\033[93m⣿\033[0m", 5: "\033[95m⣿\033[0m", 6: "\033[33m⣿\033[0m", 7: "\033[96m⣿\033[0m", 8: "\033[35m⣿\033[0m", 9: "\033[37m⣿\033[0m"}
 
 
 # Draw a segment
@@ -113,6 +114,48 @@ def solve_sudoku_no_recursion2(board):
             stack.pop()
 
     return False
+
+def solve_sudoku_iter(board):
+    # 1. collect all empty cells once
+    empties = []
+    for r in range(9):
+        for c in range(9):
+            if board[r][c] == 0:
+                empties.append((r, c))
+
+    k = 0  # index into empties
+    n = len(empties)
+
+    while 0 <= k < n:
+        r, c = empties[k]
+        # start trying from the next number after whatever is there now
+        start_num = board[r][c] + 1
+        placed = False
+
+        for num in range(start_num, 10):
+            if is_valid(board, r, c, num):
+                board[r][c] = num
+                # if you want to show it on your LED or console, do it here
+                # display_sudoku(board)  # but maybe not every step on micropython :)
+                k += 1  # move forward
+                placed = True
+                break
+
+        if not placed:
+            # no number worked here, backtrack
+            board[r][c] = 0
+            k -= 1  # move back to previous empty cell
+
+        if sys.implementation.name == 'micropython':
+            display_sudoku(sudoku_board)
+        else:
+            print("\033[H", end="")
+            print_sudoku_big(sudoku_board)
+
+        time.sleep(0.1)
+
+    return k == n  # True if solved
+
 
 
 def solve_sudoku_no_recursion(board):
@@ -207,6 +250,39 @@ def print_sudoku(board):
             print(color_mapping[board[i][j]], end=" ")
         print()
 
+# move cursor to 1-based (row, col)
+def goto(row, col):
+    sys.stdout.write(f"\033[{row};{col}H")
+
+def clear_screen():
+    sys.stdout.write("\033[2J")
+    sys.stdout.write("\033[H")
+
+def print_sudoku_big(board):
+    clear_screen()
+
+    cell_w = 2   # horizontal chars per cell
+    cell_h = 2   # vertical chars per cell
+
+    for r in range(9):
+        for c in range(9):
+            ch = color_mapping_big[board[r][c]]
+
+            # top-left corner of this cell on the terminal
+            # +1 to make it 1-based
+            base_row = r * cell_h + 1
+            base_col = c * cell_w + 1
+
+            # draw 2x2
+            for dy in range(cell_h):
+                goto(base_row + dy, base_col)
+                # print twice horizontally
+                sys.stdout.write(ch * cell_w)
+
+    # flush so it shows up immediately
+    sys.stdout.flush()
+
+
 def print_sudoku_numbers(board):
     for i in range(BOARD_SIZE):
         for j in range(BOARD_SIZE):
@@ -236,8 +312,8 @@ if __name__ == "__main__":
 #     print_sudoku(sudoku_board)
 #     if solve_sudoku_no_recursion2(sudoku_board):
     start_time = time.time()
-
-    if solve_sudoku(sudoku_board):
+#solve_sudoku_iter (added _iter)
+    if solve_sudoku_iter(sudoku_board):
         if sys.implementation.name == 'micropython':
             display_sudoku(sudoku_board)
         
